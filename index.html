@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+    content="Post-training VLMs using supervision-free visual puzzles, a difficulty&exploration-aware curriculum, and reasoning–answer consistency.">
+  <meta name="keywords" content="GRPO, VLM, RLVR, Reasoning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PuzzleCraft: Exploration-Aware Curriculum Learning for Puzzle-Based RLVR in VLMs</title>
+
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZVV1FG6M5Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZVV1FG6M5Q');
+  </script>
+
+
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+</head>
+
+<body>
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">PuzzleCraft: exploration and difficulty aware curriculum to
+              post-train puzzle based RLVR</h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://armenjeddi.github.io/">Ahmadreza Jeddi</a><sup>1,2,3,*</sup>,</span>
+              <span class="author-block">
+                <a href="https://karaimer.github.io/">Hakki C. Karaimer</a><sup>1,*</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Hue Nguyen</a><sup>1</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Zhongling Wang</a><sup>1</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Ke Zhao</a><sup>1</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Javad Rajabi</a><sup>1,2,3</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Ran Zhang</a><sup>1</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Raghav Goyal</a><sup>1</sup>,</span>
+
+              <span class="author-block">
+                <a href="https://csprofkgd.github.io/">Konstantinos G. Derpanis</a><sup>1,3,4</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Babak Taati</a><sup>2,3</sup>,</span>
+
+              <span class="author-block">
+                <a href="">Radek Grzeszczuk</a><sup>1</sup>,</span>
+
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>Samsung AI Center Toronto,</span>
+              <span class="author-block"><sup>2</sup>University of Toronto,</span>
+              <span class="author-block"><sup>3</sup>Vector Institute,</span>
+              <span class="author-block"><sup>4</sup>York University</span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2512.14944" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+
+                <!-- Code Link. -->
+                <span class="link-block">
+                  <a href="" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code (coming soon)</span>
+                  </a>
+                </span>
+
+                <!-- HF Models -->
+                <span class="link-block">
+                  <a href="https://huggingface.co/collections/armenjeddi/PuzzleCraft"
+                    class="external-link button is-normal is-rounded is-dark" target="_blank" rel="noopener">
+                    <span class="icon">
+                      <img src="./static/images/hf-logo.svg" alt="Hugging Face" class="hf-icon">
+                    </span>
+                    <span>Models</span>
+                  </a>
+                </span>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body has-text-centered">
+
+        <!-- Teaser image -->
+        <figure class="image">
+          <img src="./static/images/method.PNG" alt="PuzzleCraft method teaser">
+        </figure>
+
+        <h2 class="subtitle has-text-centered">
+          <span class="dnerf">PuzzleCraft</span> post-trains VLMs using supervision-free visual puzzles,
+          a difficulty and exploration-aware curriculum, and reasoning–answer consistency for stronger,
+          more reliable reasoning.
+        </h2>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Overview (~ Abstract & Intro ) -->
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-2">
+        <span class="">Overview</span>
+      </h1>
+    </div>
+  </section>
+
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="is-centered has-text-centered">
+        <div class="column">
+          <div class="content has-text-justified">
+            <p>
+              GRPO-style RL post-training has made it much easier to elicit chain-of-thought reasoning in VLMs,
+              but in practice we still see two persistent clusters of issues: optimization and behavior.
+              On the optimization side, existing methods often depend on costly or noisy supervision
+              (human labels or external verifiers), and use flat, sparse reward schemes where easy and hard examples
+              contribute almost equally, leading to vanishing advantages and unstable learning. On the behavior side,
+              GRPO-tuned models tend to overthink irrelevant details, shortcut to statistically likely answers, and
+              frequently produce a final answer that contradicts their own reasoning trace—what we call reasoning–answer
+              inconsistency. The illustration below shows these failure modes on a simple visual puzzle.
+            </p>
+
+            <div class="has-text-centered">
+
+              <figure class="image body-image">
+                <img src="./static/images/bunnies.PNG" alt="Failure modes in current GRPO post-training methods">
+              </figure>
+
+            </div>
+
+            <p>
+              PuzzleCraft tackles these challenges with three components. First, it replaces hand-crafted supervision
+              with a
+              puzzle-based RLVR setup using three programmatically verifiable environments—PatchFit, Rotation, and
+              Jigsaw—that provide clean, vision-centric rewards. Second, it uses a difficulty-aware curriculum that
+              upweights medium-difficulty groups to counter flat rewards and stabilize GRPO training. Third, it defines
+              a
+              Reasoning–Answer Consistency (RAC) metric and uses consistency-aware reward schemes to align the chain of
+              thought with the final answer. Together, these ingredients yield state-of-the-art results among
+              open-source,
+              supervision-free vision-centric post-training methods on Qwen2.5-VL-3B and 7B, as shown in the comparison
+              with
+              strong 7B baselines below.
+            </p>
+
+            <div class="has-text-centered">
+
+              <figure class="image body-image">
+                <img src="./static/images/spider.PNG"
+                  alt="Diagram comparing PuzzleCraft with 7B baselines on 8 vision-centric benchmarks">
+              </figure>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+  </section>
+
+
+  <!--  Reasoning Answer Consistency -->
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-2">
+        <span class="">Reasoning-Answer Consistency (RAC)</span>
+      </h1>
+    </div>
+  </section>
+
+
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="is-centered has-text-centered">
+        <div class="column">
+          <div class="content has-text-justified">
+            <p>
+              Reasoning–answer inconsistency—where a model’s final answer contradicts its own chain-of-thought—has been
+              repeatedly observed in the LLM RL literature. Motivated by this, we explicitly track a Reasoning–Answer
+              Consistency (RAC) metric during puzzle post-training, using an open-source Qwen-72B judge to score the
+              alignment between rationales and answers across rollouts. The plot below visualizes how RAC evolves over
+              training alongside three other signals: reward variance, average reward, and response length.
+            </p>
+
+            <div class="has-text-centered">
+
+              <figure class="image body-image">
+                <img src="./static/images/posttraining_metrics.PNG" alt="Metrics during post-training">
+              </figure>
+
+            </div>
+
+            <p>
+              In our Jigsaw experiments, vanilla GRPO shows the worst RAC: near the end of training, answers collapse
+              while rationales diverge, leading to a sharp drop in consistency. Adding our difficulty-aware curriculum
+              already reduces this late-stage degradation, and combining it with the CARE consistency-enhancing reward
+              scheme further boosts RAC throughout training. Together, curriculum + CARE yield the highest RAC
+              trajectory
+              among all variants, aligning better reasoning traces with more reliable final answers.
+            </p>
+
+
+          </div>
+        </div>
+      </div>
+
+  </section>
+
+
+
+
+
+
+  <!-- Benchmark Auditing -->
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-2">
+        <span class="">Benchmark Auditing</span>
+      </h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="is-centered has-text-centered">
+        <div class="column">
+          <div class="content has-text-justified">
+            <p>
+              A useful byproduct of our supervision-free GRPO post-training is benchmark auditing. Because PuzzleCraft
+              never
+              relies on noisy human annotations or external verifiers, the resulting models often flag and correct
+              mislabeled
+              samples directly in the evaluation sets. Across several major vision-centric reasoning benchmarks, we find
+              that
+              noisy or questionable annotations are surprisingly common—sometimes affecting more than 10% of the
+              samples.
+            </p>
+
+            <div class="has-text-centered">
+
+              <figure class="image body-image">
+                <img src="./static/images/noise_main.PNG" alt="Examples of noise in vision benchmarks">
+              </figure>
+
+            </div>
+
+            <p>
+              We view this as a serious issue for the community and invite others to scrutinize benchmark quality
+              alongside model
+              performance. As an initial step, we experiment with an automatic auditing pipeline that uses a mix of
+              high-end VLMs
+              (e.g., GPT, Gemini, Claude) as label critics to detect and filter noisy samples, and we report results
+              under this
+              “cleaned benchmark” protocol in the paper.
+            </p>
+
+
+          </div>
+        </div>
+      </div>
+
+  </section>
+
+
+
+  <!-- Main Results-->
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-2">
+        <span class="">Qwen2.5-VL 7B & 3B Performance</span>
+      </h1>
+    </div>
+  </section>
+
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="is-centered has-text-centered">
+        <div class="column">
+          <div class="content has-text-justified">
+            <p>
+              The results for the 7B baselines and our PuzzleCraft variants:
+            </p>
+
+            <div class="has-text-centered">
+
+              <figure class="image body-image">
+                <img src="./static/images/7b.png" alt="Table for the 7B baselines">
+              </figure>
+
+            </div>
+
+            <p>
+              The results for the 3B baselines and our PuzzleCraft variants:
+            </p>
+
+            <div class="has-text-centered">
+
+              <figure class="image body-image">
+                <img src="./static/images/3b.png" alt="Table for the 3B baselines">
+              </figure>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+  </section>
+
+
+
+
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@misc{jeddi2025puzzlecurriculumgrpovisioncentric,
+    title         = {Puzzle Curriculum GRPO for Vision-Centric Reasoning},
+    author        = {Ahmadreza Jeddi and
+                     Hakki Can Karaimer and
+                     Hue Nguyen and
+                     Zhongling Wang and
+                     Ke Zhao and
+                     Javad Rajabi and
+                     Ran Zhang and
+                     Raghav Goyal and
+                     Babak Taati and
+                     Radek Grzeszczuk},
+    year          = {2025},
+    eprint        = {2512.14944},
+    archivePrefix = {arXiv},
+    primaryClass  = {cs.CV},
+    url           = {https://arxiv.org/abs/2512.14944},
+  }</code></pre>
+    </div>
+  </section>
+
+
+
+  <footer class="footer">
+    <div class="container">
+
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              The website template is borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
