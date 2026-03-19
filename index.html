@@ -1,422 +1,1111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="description"
-    content="Post-training VLMs using supervision-free visual puzzles, a difficulty&exploration-aware curriculum, and reasoning–answer consistency.">
-  <meta name="keywords" content="GRPO, VLM, RLVR, Reasoning">
+    content="PuzzleCraft is a supervision-free puzzle-based RLVR framework for post-training VLMs with exploration-aware curricula and reasoning-answer consistency.">
+  <meta name="keywords" content="PuzzleCraft, RLVR, VLM, GRPO, reasoning, curriculum, RAC">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PuzzleCraft: Exploration-Aware Curriculum Learning for Puzzle-Based RLVR in VLMs</title>
 
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZVV1FG6M5Q"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-ZVV1FG6M5Q');
-  </script>
-
-
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700|Castoro:400"
+    rel="stylesheet">
   <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/favicon.svg">
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
 </head>
 
 <body>
 
-
-  <section class="hero">
+  <section class="hero hero-puzzle">
     <div class="hero-body">
       <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">PuzzleCraft: exploration and difficulty aware curriculum to
-              post-train puzzle based RLVR</h1>
-            <div class="is-size-5 publication-authors">
-              <span class="author-block">
-                <a href="https://armenjeddi.github.io/">Ahmadreza Jeddi</a><sup>1,2,3,*</sup>,</span>
-              <span class="author-block">
-                <a href="https://karaimer.github.io/">Hakki C. Karaimer</a><sup>1,*</sup>,</span>
+        <div class="puzzle-hero-card">
+          <div class="hero-kicker-wrap">
+            <span class="hero-kicker">Supervision-free RLVR for VLM post-training</span>
+          </div>
 
-              <span class="author-block">
-                <a href="">Hue Nguyen</a><sup>1</sup>,</span>
+          <h1 class="title is-1 publication-title">PuzzleCraft: Exploration-Aware Curriculum Learning for Puzzle-Based
+            RLVR in VLMs</h1>
 
-              <span class="author-block">
-                <a href="">Zhongling Wang</a><sup>1</sup>,</span>
+          <p class="hero-summary">
+            PuzzleCraft studies how lightweight visual puzzles, exploration-aware curricula, and reasoning–answer
+            consistency can make puzzle-based RLVR more effective for vision–language models.
+          </p>
 
-              <span class="author-block">
-                <a href="">Ke Zhao</a><sup>1</sup>,</span>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><a href="https://armenjeddi.github.io/" target="_blank" rel="noopener">Ahmadreza
+                Jeddi</a><sup>1,2,3,*</sup>,</span>
+            <span class="author-block"><a href="https://karaimer.github.io/" target="_blank" rel="noopener">Hakki C.
+                Karaimer</a><sup>1,*</sup>,</span>
+            <span class="author-block">Hue Nguyen<sup>1</sup>,</span>
+            <span class="author-block">Zhongling Wang<sup>1,**</sup>,</span>
+            <span class="author-block">Ke Zhao<sup>1,**</sup>,</span>
+            <span class="author-block"><a href="https://www.cs.toronto.edu/~rajabi/" target="_blank"
+                rel="noopener">Javad Rajabi</a><sup>1,2,3,**</sup>,</span>
+            <span class="author-block">Ran Zhang<sup>1,**</sup>,</span>
+            <span class="author-block">Raghav Goyal<sup>1</sup>,</span>
+            <span class="author-block"><a href="https://csprofkgd.github.io/" target="_blank"
+                rel="noopener">Konstantinos G. Derpanis</a><sup>1,3,4</sup>,</span>
+            <span class="author-block"><a href="https://www.cs.toronto.edu/~taati/" target="_blank" rel="noopener">Babak
+                Taati</a><sup>2,3</sup>,</span>
+            <span class="author-block">Radek Grzeszczuk<sup>1</sup></span>
+          </div>
 
-              <span class="author-block">
-                <a href="">Javad Rajabi</a><sup>1,2,3</sup>,</span>
+          <div class="is-size-6 publication-affiliations">
+            <span class="affiliation-block"><sup>1</sup>AI Center–Toronto, Samsung Electronics</span>
+            <span class="affiliation-block"><sup>2</sup>University of Toronto</span>
+            <span class="affiliation-block"><sup>3</sup>Vector Institute</span>
+            <span class="affiliation-block"><sup>4</sup>York University</span>
+          </div>
 
-              <span class="author-block">
-                <a href="">Ran Zhang</a><sup>1</sup>,</span>
+          <div class="hero-note">* Equal contribution &nbsp;&nbsp; ** Equal contribution</div>
 
-              <span class="author-block">
-                <a href="">Raghav Goyal</a><sup>1</sup>,</span>
-
-              <span class="author-block">
-                <a href="https://csprofkgd.github.io/">Konstantinos G. Derpanis</a><sup>1,3,4</sup>,</span>
-
-              <span class="author-block">
-                <a href="">Babak Taati</a><sup>2,3</sup>,</span>
-
-              <span class="author-block">
-                <a href="">Radek Grzeszczuk</a><sup>1</sup>,</span>
-
-            </div>
-
-            <div class="is-size-5 publication-authors">
-              <span class="author-block"><sup>1</sup>Samsung AI Center Toronto,</span>
-              <span class="author-block"><sup>2</sup>University of Toronto,</span>
-              <span class="author-block"><sup>3</sup>Vector Institute,</span>
-              <span class="author-block"><sup>4</sup>York University</span>
-            </div>
-
-            <div class="column has-text-centered">
-              <div class="publication-links">
-                <span class="link-block">
-                  <a href="https://arxiv.org/abs/2512.14944" class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                    </span>
-                    <span>Paper</span>
-                  </a>
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="https://arxiv.org/abs/2512.14944" class="external-link button is-rounded soft-button"
+                target="_blank" rel="noopener">
+                <span class="icon"><i class="ai ai-arxiv"></i></span>
+                <span>arXiv</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://huggingface.co/collections/armenjeddi/pc-grpo"
+                class="external-link button is-rounded soft-button" target="_blank" rel="noopener">
+                <span class="icon">
+                  <img src="./static/images/hf-logo.svg" alt="Models"
+                    style="height: 1.1rem; width: 1.1rem; object-fit: contain;" />
                 </span>
-
-                <!-- Code Link. -->
-                <span class="link-block">
-                  <a href="" class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Code (coming soon)</span>
-                  </a>
-                </span>
-
-                <!-- HF Models -->
-                <span class="link-block">
-                  <a href="https://huggingface.co/collections/armenjeddi/PuzzleCraft"
-                    class="external-link button is-normal is-rounded is-dark" target="_blank" rel="noopener">
-                    <span class="icon">
-                      <img src="./static/images/hf-logo.svg" alt="Hugging Face" class="hf-icon">
-                    </span>
-                    <span>Models</span>
-                  </a>
-                </span>
-
-
-              </div>
-            </div>
+                <span>Hugging Face</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#results" class="external-link button is-rounded soft-button secondary-button">
+                <span class="icon"><i class="fas fa-table"></i></span>
+                <span>Results</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#bibtex" class="external-link button is-rounded soft-button secondary-button">
+                <span class="icon"><i class="fas fa-quote-right"></i></span>
+                <span>BibTeX</span>
+              </a>
+            </span>
           </div>
         </div>
-      </div>
-  </section>
-
-  <section class="hero teaser">
-    <div class="container is-max-desktop">
-      <div class="hero-body has-text-centered">
-
-        <!-- Teaser image -->
-        <figure class="image">
-          <img src="./static/images/method.PNG" alt="PuzzleCraft method teaser">
-        </figure>
-
-        <h2 class="subtitle has-text-centered">
-          <span class="dnerf">PuzzleCraft</span> post-trains VLMs using supervision-free visual puzzles,
-          a difficulty and exploration-aware curriculum, and reasoning–answer consistency for stronger,
-          more reliable reasoning.
-        </h2>
       </div>
     </div>
   </section>
 
-
-  <!-- Overview (~ Abstract & Intro ) -->
-  <section class="hero is-light is-small">
-    <div class="hero-body has-text-centered">
-      <h1 class="title is-2">
-        <span class="">Overview</span>
-      </h1>
+  <section class="section section-tight">
+    <div class="container is-max-desktop">
+      <div class="hero-figure-card">
+        <img src="./static/images/figure1_overview.png" alt="PuzzleCraft overview figure from the paper">
+        <p class="figure-caption">
+          <strong>Figure 1.</strong> PuzzleCraft uses three automatically verifiable puzzle environments—Jigsaw,
+          PatchFit, and Rotation—then combines curriculum weighting with reasoning–answer consistency analysis.
+        </p>
+      </div>
     </div>
   </section>
 
-
-
-  <section class="section">
+  <section class="section section-soft">
     <div class="container is-max-desktop">
+      <div class="section-heading">
+        <span class="section-tag">Overview</span>
+        <h2 class="title is-2 section-title">What changes in PuzzleCraft?</h2>
+      </div>
 
-      <div class="is-centered has-text-centered">
-        <div class="column">
-          <div class="content has-text-justified">
+      <div class="columns is-variable is-6 overview-grid">
+        <div class="column is-6">
+          <div class="content lead-copy">
             <p>
-              GRPO-style RL post-training has made it much easier to elicit chain-of-thought reasoning in VLMs,
-              but in practice we still see two persistent clusters of issues: optimization and behavior.
-              On the optimization side, existing methods often depend on costly or noisy supervision
-              (human labels or external verifiers), and use flat, sparse reward schemes where easy and hard examples
-              contribute almost equally, leading to vanishing advantages and unstable learning. On the behavior side,
-              GRPO-tuned models tend to overthink irrelevant details, shortcut to statistically likely answers, and
-              frequently produce a final answer that contradicts their own reasoning trace—what we call reasoning–answer
-              inconsistency. The illustration below shows these failure modes on a simple visual puzzle.
+              PuzzleCraft frames puzzle-based RLVR as a <strong>curriculum</strong> and <strong>consistent
+                reasoning</strong> problem, not just reward maximization. The paper introduces a supervision-free setup
+              where all rewards are built into the environment itself, removing the need for curated labels or external
+              verifiers.
             </p>
-
-            <div class="has-text-centered">
-
-              <figure class="image body-image">
-                <img src="./static/images/bunnies.PNG" alt="Failure modes in current GRPO post-training methods">
-              </figure>
-
-            </div>
-
             <p>
-              PuzzleCraft tackles these challenges with three components. First, it replaces hand-crafted supervision
-              with a
-              puzzle-based RLVR setup using three programmatically verifiable environments—PatchFit, Rotation, and
-              Jigsaw—that provide clean, vision-centric rewards. Second, it uses a difficulty-aware curriculum that
-              upweights medium-difficulty groups to counter flat rewards and stabilize GRPO training. Third, it defines
-              a
-              Reasoning–Answer Consistency (RAC) metric and uses consistency-aware reward schemes to align the chain of
-              thought with the final answer. Together, these ingredients yield state-of-the-art results among
-              open-source,
-              supervision-free vision-centric post-training methods on Qwen2.5-VL-3B and 7B, as shown in the comparison
-              with
-              strong 7B baselines below.
+              The framework instantiates <strong>Jigsaw</strong>, <strong>PatchFit</strong>, and
+              <strong>Rotation</strong>. Jigsaw is especially important because it supports <strong>partial-credit
+                rewards</strong>, letting the model get credit for intermediate progress instead of collapsing
+              everything to all-or-nothing outcomes.
             </p>
-
-            <div class="has-text-centered">
-
-              <figure class="image body-image">
-                <img src="./static/images/spider.PNG"
-                  alt="Diagram comparing PuzzleCraft with 7B baselines on 8 vision-centric benchmarks">
-              </figure>
-
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="puzzle-pill-grid">
+            <div class="puzzle-pill orange">
+              <h3>Exploration-aware curriculum</h3>
+              <p>Weights prompts by both difficulty and solution-space dispersion, downweighting rollout collapse.</p>
             </div>
-
-
+            <div class="puzzle-pill teal">
+              <h3>Reasoning–Answer Consistency</h3>
+              <p>Tracks whether the chain-of-thought actually supports the final answer.</p>
+            </div>
+            <div class="puzzle-pill blue">
+              <h3>Lightweight puzzle environments</h3>
+              <p>PatchFit, Rotation, and Jigsaw provide scalable automatically verifiable rewards.</p>
+            </div>
+            <div class="puzzle-pill gold">
+              <h3>Transfer beyond puzzles</h3>
+              <p>Downstream gains appear on image reasoning, video reasoning, and multiple Qwen backbones.</p>
+            </div>
           </div>
         </div>
       </div>
-
-  </section>
-
-
-  <!--  Reasoning Answer Consistency -->
-  <section class="hero is-light is-small">
-    <div class="hero-body has-text-centered">
-      <h1 class="title is-2">
-        <span class="">Reasoning-Answer Consistency (RAC)</span>
-      </h1>
-    </div>
-  </section>
-
-
-
-
-  <section class="section">
-    <div class="container is-max-desktop">
-
-      <div class="is-centered has-text-centered">
-        <div class="column">
-          <div class="content has-text-justified">
-            <p>
-              Reasoning–answer inconsistency—where a model’s final answer contradicts its own chain-of-thought—has been
-              repeatedly observed in the LLM RL literature. Motivated by this, we explicitly track a Reasoning–Answer
-              Consistency (RAC) metric during puzzle post-training, using an open-source Qwen-72B judge to score the
-              alignment between rationales and answers across rollouts. The plot below visualizes how RAC evolves over
-              training alongside three other signals: reward variance, average reward, and response length.
-            </p>
-
-            <div class="has-text-centered">
-
-              <figure class="image body-image">
-                <img src="./static/images/posttraining_metrics.PNG" alt="Metrics during post-training">
-              </figure>
-
-            </div>
-
-            <p>
-              In our Jigsaw experiments, vanilla GRPO shows the worst RAC: near the end of training, answers collapse
-              while rationales diverge, leading to a sharp drop in consistency. Adding our difficulty-aware curriculum
-              already reduces this late-stage degradation, and combining it with the CARE consistency-enhancing reward
-              scheme further boosts RAC throughout training. Together, curriculum + CARE yield the highest RAC
-              trajectory
-              among all variants, aligning better reasoning traces with more reliable final answers.
-            </p>
-
-
-          </div>
-        </div>
-      </div>
-
-  </section>
-
-
-
-
-
-
-  <!-- Benchmark Auditing -->
-  <section class="hero is-light is-small">
-    <div class="hero-body has-text-centered">
-      <h1 class="title is-2">
-        <span class="">Benchmark Auditing</span>
-      </h1>
     </div>
   </section>
 
   <section class="section">
     <div class="container is-max-desktop">
-
-      <div class="is-centered has-text-centered">
-        <div class="column">
-          <div class="content has-text-justified">
-            <p>
-              A useful byproduct of our supervision-free GRPO post-training is benchmark auditing. Because PuzzleCraft
-              never
-              relies on noisy human annotations or external verifiers, the resulting models often flag and correct
-              mislabeled
-              samples directly in the evaluation sets. Across several major vision-centric reasoning benchmarks, we find
-              that
-              noisy or questionable annotations are surprisingly common—sometimes affecting more than 10% of the
-              samples.
-            </p>
-
-            <div class="has-text-centered">
-
-              <figure class="image body-image">
-                <img src="./static/images/noise_main.PNG" alt="Examples of noise in vision benchmarks">
-              </figure>
-
-            </div>
-
-            <p>
-              We view this as a serious issue for the community and invite others to scrutinize benchmark quality
-              alongside model
-              performance. As an initial step, we experiment with an automatic auditing pipeline that uses a mix of
-              high-end VLMs
-              (e.g., GPT, Gemini, Claude) as label critics to detect and filter noisy samples, and we report results
-              under this
-              “cleaned benchmark” protocol in the paper.
-            </p>
-
-
-          </div>
-        </div>
+      <div class="section-heading compact">
+        <span class="section-tag">Highlights</span>
+        <h2 class="title is-3 section-title">Key numbers from the paper</h2>
       </div>
 
-  </section>
-
-
-
-  <!-- Main Results-->
-  <section class="hero is-light is-small">
-    <div class="hero-body has-text-centered">
-      <h1 class="title is-2">
-        <span class="">Qwen2.5-VL 7B & 3B Performance</span>
-      </h1>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">67.78</div>
+          <div class="stat-label">Qwen2.5-VL-7B Jigsaw average on 9 image benchmarks</div>
+          <div class="stat-note">+2.20 over the strongest puzzle baseline (65.58)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">53.93</div>
+          <div class="stat-label">Qwen2.5-VL-7B Jigsaw average on 7 video benchmarks</div>
+          <div class="stat-note">+1.47 over VisualSphinx (52.46)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">60.44</div>
+          <div class="stat-label">Qwen2.5-VL-3B Mix average on 9 image benchmarks</div>
+          <div class="stat-note">+2.60 over VLM-R1 and +3.15 over ViGoRL</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">+2.60 / +2.91 / +1.87</div>
+          <div class="stat-label">Qwen3-VL Jigsaw gains over 2B / 4B / 8B instruct checkpoints</div>
+          <div class="stat-note">From the main image benchmark table</div>
+        </div>
+      </div>
     </div>
   </section>
 
+  <section class="section section-soft">
+    <div class="container is-max-desktop">
+      <div class="section-heading">
+        <span class="section-tag">Ablations</span>
+        <h2 class="title is-2 section-title">Consistency and curriculum matter together</h2>
+      </div>
 
+      <div class="columns is-variable is-6 is-vcentered">
+        <div class="column is-6">
+          <div class="content lead-copy">
+            <p>
+              The paper tracks four post-training signals over time: reward variance, reasoning–answer consistency
+              (RAC), response length, and reward score. Vanilla GRPO improves early but shows later <strong>consistency
+                drift</strong>. The exploration-aware curriculum reduces that decline, and the combination with
+              <strong>GRPO-CARE</strong> gives the strongest RAC profile overall.
+            </p>
+            <p>
+              On the six-benchmark ablation in Table&nbsp;1, the full <strong>Jigsaw + Curriculum + CARE</strong> setup
+              reaches the best average score, <strong>75.70</strong>, ahead of Jigsaw alone at <strong>73.44</strong>
+              and ahead of Jigsaw + CARE at <strong>75.25</strong>.
+            </p>
+          </div>
+
+          <div class="table-card small-table-card">
+            <div class="table-title">Table 1. Consistency ablation on Qwen2.5-VL-7B</div>
+            <div class="table-scroll">
+              <table class="paper-table compact-table">
+                <thead>
+                  <tr>
+                    <th>Variant</th>
+                    <th>MME</th>
+                    <th>MMStar</th>
+                    <th>POPE</th>
+                    <th>MMT</th>
+                    <th>CV-Bench</th>
+                    <th>MMVP</th>
+                    <th>Avg.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Qwen2.5-VL-Instruct</td>
+                    <td>2243</td>
+                    <td>64.67</td>
+                    <td>81.77</td>
+                    <td>59.64</td>
+                    <td>73.62</td>
+                    <td>77.67</td>
+                    <td>72.91</td>
+                  </tr>
+                  <tr>
+                    <td>Jigsaw</td>
+                    <td>2340</td>
+                    <td>64.47</td>
+                    <td>85.17</td>
+                    <td>59.96</td>
+                    <td>72.13</td>
+                    <td>75.33</td>
+                    <td>73.44</td>
+                  </tr>
+                  <tr>
+                    <td>Jigsaw + CARE</td>
+                    <td>2319</td>
+                    <td>65.80</td>
+                    <td>86.95</td>
+                    <td>61.18</td>
+                    <td>77.76</td>
+                    <td>77.00</td>
+                    <td>75.25</td>
+                  </tr>
+                  <tr>
+                    <td>Jigsaw + Curriculum</td>
+                    <td>2365</td>
+                    <td>64.27</td>
+                    <td>84.35</td>
+                    <td>62.62</td>
+                    <td>75.37</td>
+                    <td>74.67</td>
+                    <td>74.30</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Jigsaw + Curriculum + CARE</td>
+                    <td>2366</td>
+                    <td>64.60</td>
+                    <td>86.52</td>
+                    <td>62.26</td>
+                    <td>77.63</td>
+                    <td>78.67</td>
+                    <td>75.70</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="column is-6">
+          <div class="hero-figure-card figure-on-soft">
+            <img src="./static/images/figure2_metrics.png" alt="RAC and training dynamics from the paper">
+            <p class="figure-caption">
+              <strong>Figure 2.</strong> RAC rises early and can degrade later under vanilla GRPO; the curriculum and
+              CARE stabilize that trend.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="results">
+    <div class="container is-max-widescreen">
+      <div class="section-heading">
+        <span class="section-tag">Results</span>
+        <h2 class="title is-2 section-title">Image benchmark results</h2>
+        <p class="section-subtitle">All values below are copied from the current PDF tables. Avg. is the mean over 9
+          benchmarks, with MME normalized in the paper before averaging.</p>
+      </div>
+
+      <div class="claims-grid">
+        <div class="claim-card">
+          <h3>Qwen2.5-VL-7B</h3>
+          <p>Jigsaw reaches <strong>67.78 Avg.</strong>, which is <strong>+2.20</strong> over Visual Jigsaw and
+            <strong>+2.12</strong> over GRPO-CARE.
+          </p>
+        </div>
+        <div class="claim-card">
+          <h3>Qwen2.5-VL-3B</h3>
+          <p>Mix reaches <strong>60.44 Avg.</strong>, outperforming VLM-R1 by <strong>+2.60</strong> and ViGoRL by
+            <strong>+3.15</strong>.
+          </p>
+        </div>
+        <div class="claim-card">
+          <h3>Qwen3-VL</h3>
+          <p>Jigsaw improves all three tested scales: <strong>+2.60</strong> on 2B, <strong>+2.91</strong> on 4B, and
+            <strong>+1.87</strong> on 8B.
+          </p>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-title">Table 2a. Qwen2.5-VL-7B on 9 image benchmarks</div>
+        <div class="table-scroll">
+          <table class="paper-table results-table wide-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>MathVista</th>
+                <th>MathVision</th>
+                <th>MathVerse</th>
+                <th>MME</th>
+                <th>MMStar</th>
+                <th>POPE</th>
+                <th>MMT</th>
+                <th>CV-Bench</th>
+                <th>MMVP</th>
+                <th>Avg.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Qwen2.5-VL (Vanilla)</td>
+                <td>66.30</td>
+                <td>23.68</td>
+                <td>56.49</td>
+                <td>2243</td>
+                <td>64.67</td>
+                <td>81.77</td>
+                <td>59.64</td>
+                <td>73.62</td>
+                <td>77.67</td>
+                <td>64.88</td>
+              </tr>
+              <tr>
+                <td>Vision-R1</td>
+                <td>68.89</td>
+                <td>39.47</td>
+                <td>59.99</td>
+                <td>2292</td>
+                <td>62.33</td>
+                <td>88.41</td>
+                <td>59.70</td>
+                <td>72.17</td>
+                <td>77.00</td>
+                <td>67.76</td>
+              </tr>
+              <tr>
+                <td>VL-Rethinker</td>
+                <td>72.39</td>
+                <td>29.90</td>
+                <td>67.29</td>
+                <td>2311</td>
+                <td>63.06</td>
+                <td>83.62</td>
+                <td>61.01</td>
+                <td>76.90</td>
+                <td>77.33</td>
+                <td>68.23</td>
+              </tr>
+              <tr>
+                <td>GRPO-CARE</td>
+                <td>68.70</td>
+                <td>20.39</td>
+                <td>47.71</td>
+                <td>2352</td>
+                <td>64.13</td>
+                <td>88.18</td>
+                <td>62.62</td>
+                <td>74.91</td>
+                <td>80.33</td>
+                <td>65.66</td>
+              </tr>
+              <tr>
+                <td>ViCrit</td>
+                <td>61.40</td>
+                <td>18.75</td>
+                <td>38.02</td>
+                <td>2167</td>
+                <td>62.27</td>
+                <td>80.50</td>
+                <td>59.83</td>
+                <td>70.84</td>
+                <td>75.33</td>
+                <td>60.48</td>
+              </tr>
+              <tr>
+                <td>Vision-Zero</td>
+                <td>66.20</td>
+                <td>21.05</td>
+                <td>45.86</td>
+                <td>2248</td>
+                <td>63.47</td>
+                <td>82.67</td>
+                <td>60.47</td>
+                <td>73.53</td>
+                <td>78.00</td>
+                <td>63.50</td>
+              </tr>
+              <tr>
+                <td>Visual Jigsaw</td>
+                <td>67.50</td>
+                <td>29.27</td>
+                <td>57.50</td>
+                <td>2243</td>
+                <td>62.53</td>
+                <td>84.78</td>
+                <td>57.76</td>
+                <td>74.46</td>
+                <td>76.33</td>
+                <td>65.58</td>
+              </tr>
+              <tr>
+                <td>VisualSphinx</td>
+                <td>67.80</td>
+                <td>26.31</td>
+                <td>53.90</td>
+                <td>2296</td>
+                <td>63.20</td>
+                <td>83.93</td>
+                <td>60.63</td>
+                <td>73.98</td>
+                <td>77.33</td>
+                <td>65.45</td>
+              </tr>
+              <tr>
+                <td>Game-RL</td>
+                <td>67.40</td>
+                <td>24.01</td>
+                <td>58.00</td>
+                <td>2229</td>
+                <td>64.60</td>
+                <td>81.77</td>
+                <td>61.27</td>
+                <td>75.24</td>
+                <td>77.66</td>
+                <td>65.51</td>
+              </tr>
+              <tr class="row-ours">
+                <td>Jigsaw</td>
+                <td>68.20</td>
+                <td>30.92</td>
+                <td>56.70</td>
+                <td>2366</td>
+                <td>64.60</td>
+                <td>86.52</td>
+                <td>62.26</td>
+                <td>77.63</td>
+                <td>78.67</td>
+                <td>67.78</td>
+              </tr>
+              <tr class="row-ours">
+                <td>PatchFit</td>
+                <td>68.03</td>
+                <td>26.31</td>
+                <td>50.89</td>
+                <td>2316</td>
+                <td>59.87</td>
+                <td>85.05</td>
+                <td>58.94</td>
+                <td>73.37</td>
+                <td>78.00</td>
+                <td>64.80</td>
+              </tr>
+              <tr class="row-ours">
+                <td>Rotation</td>
+                <td>71.70</td>
+                <td>22.69</td>
+                <td>57.70</td>
+                <td>2357</td>
+                <td>64.60</td>
+                <td>87.36</td>
+                <td>61.91</td>
+                <td>75.08</td>
+                <td>79.67</td>
+                <td>67.21</td>
+              </tr>
+              <tr class="row-ours">
+                <td>Mix</td>
+                <td>68.20</td>
+                <td>24.01</td>
+                <td>58.10</td>
+                <td>2359</td>
+                <td>65.20</td>
+                <td>85.40</td>
+                <td>62.65</td>
+                <td>76.96</td>
+                <td>78.33</td>
+                <td>67.01</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="columns is-variable is-5">
+        <div class="column is-6">
+          <div class="table-card full-height">
+            <div class="table-title">Table 2b. Qwen2.5-VL-3B on 9 image benchmarks</div>
+            <div class="table-scroll">
+              <table class="paper-table results-table compact-results-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>MathVista</th>
+                    <th>MathVision</th>
+                    <th>MathVerse</th>
+                    <th>MME</th>
+                    <th>MMStar</th>
+                    <th>POPE</th>
+                    <th>MMT</th>
+                    <th>CV-Bench</th>
+                    <th>MMVP</th>
+                    <th>Avg.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Qwen2.5-VL (Vanilla)</td>
+                    <td>57.19</td>
+                    <td>21.38</td>
+                    <td>38.30</td>
+                    <td>2180</td>
+                    <td>54.73</td>
+                    <td>77.41</td>
+                    <td>53.31</td>
+                    <td>65.62</td>
+                    <td>63.33</td>
+                    <td>56.57</td>
+                  </tr>
+                  <tr>
+                    <td>VLM-R1</td>
+                    <td>57.99</td>
+                    <td>19.73</td>
+                    <td>40.80</td>
+                    <td>2207</td>
+                    <td>55.20</td>
+                    <td>79.66</td>
+                    <td>52.06</td>
+                    <td>66.65</td>
+                    <td>69.67</td>
+                    <td>57.84</td>
+                  </tr>
+                  <tr>
+                    <td>ViGoRL</td>
+                    <td>56.10</td>
+                    <td>18.42</td>
+                    <td>34.60</td>
+                    <td>1919</td>
+                    <td>50.46</td>
+                    <td>84.75</td>
+                    <td>54.90</td>
+                    <td>79.21</td>
+                    <td>68.66</td>
+                    <td>57.29</td>
+                  </tr>
+                  <tr>
+                    <td>Jigsaw-R1</td>
+                    <td>58.80</td>
+                    <td>22.69</td>
+                    <td>40.30</td>
+                    <td>2184</td>
+                    <td>55.53</td>
+                    <td>78.05</td>
+                    <td>57.53</td>
+                    <td>70.87</td>
+                    <td>69.66</td>
+                    <td>59.05</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Jigsaw</td>
+                    <td>58.09</td>
+                    <td>18.42</td>
+                    <td>44.70</td>
+                    <td>2223</td>
+                    <td>55.40</td>
+                    <td>78.68</td>
+                    <td>57.88</td>
+                    <td>71.33</td>
+                    <td>68.67</td>
+                    <td>59.17</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Mix</td>
+                    <td>60.60</td>
+                    <td>24.01</td>
+                    <td>49.00</td>
+                    <td>2127</td>
+                    <td>57.53</td>
+                    <td>77.30</td>
+                    <td>57.72</td>
+                    <td>72.88</td>
+                    <td>69.00</td>
+                    <td>60.44</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="column is-6">
+          <div class="table-card full-height">
+            <div class="table-title">Table 2c. Qwen3-VL on 9 image benchmarks</div>
+            <div class="table-scroll">
+              <table class="paper-table results-table compact-results-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>MathVista</th>
+                    <th>MathVision</th>
+                    <th>MathVerse</th>
+                    <th>MME</th>
+                    <th>MMStar</th>
+                    <th>POPE</th>
+                    <th>MMT</th>
+                    <th>CV-Bench</th>
+                    <th>MMVP</th>
+                    <th>Avg.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Qwen3-VL-2B-Instruct</td>
+                    <td>40.69</td>
+                    <td>15.13</td>
+                    <td>28.10</td>
+                    <td>2072</td>
+                    <td>46.60</td>
+                    <td>82.88</td>
+                    <td>53.53</td>
+                    <td>71.36</td>
+                    <td>70.33</td>
+                    <td>53.62</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Qwen3-VL-2B-Jigsaw</td>
+                    <td>42.00</td>
+                    <td>19.07</td>
+                    <td>37.50</td>
+                    <td>2076</td>
+                    <td>48.86</td>
+                    <td>84.81</td>
+                    <td>56.53</td>
+                    <td>72.10</td>
+                    <td>71.00</td>
+                    <td>56.22</td>
+                  </tr>
+                  <tr>
+                    <td>Qwen3-VL-4B-Instruct</td>
+                    <td>51.63</td>
+                    <td>22.03</td>
+                    <td>44.30</td>
+                    <td>2138</td>
+                    <td>53.40</td>
+                    <td>87.57</td>
+                    <td>58.77</td>
+                    <td>73.98</td>
+                    <td>75.66</td>
+                    <td>60.41</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Qwen3-VL-4B-Jigsaw</td>
+                    <td>53.40</td>
+                    <td>28.28</td>
+                    <td>51.90</td>
+                    <td>2207</td>
+                    <td>55.80</td>
+                    <td>87.56</td>
+                    <td>61.24</td>
+                    <td>76.55</td>
+                    <td>76.33</td>
+                    <td>63.32</td>
+                  </tr>
+                  <tr>
+                    <td>Qwen3-VL-8B-Instruct</td>
+                    <td>57.40</td>
+                    <td>23.68</td>
+                    <td>47.90</td>
+                    <td>2243</td>
+                    <td>57.46</td>
+                    <td>86.25</td>
+                    <td>59.96</td>
+                    <td>76.84</td>
+                    <td>75.33</td>
+                    <td>62.77</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Qwen3-VL-8B-Jigsaw</td>
+                    <td>58.19</td>
+                    <td>28.28</td>
+                    <td>55.20</td>
+                    <td>2227</td>
+                    <td>57.66</td>
+                    <td>86.58</td>
+                    <td>61.72</td>
+                    <td>76.56</td>
+                    <td>78.00</td>
+                    <td>64.64</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container is-max-widescreen">
+      <div class="section-heading compact">
+        <span class="section-tag">Video transfer</span>
+        <h2 class="title is-3 section-title">Puzzle-based RLVR transfers to video benchmarks too</h2>
+      </div>
+
+      <p class="section-subtitle max-copy">
+        Without using video data during post-training, Qwen2.5-VL-7B Jigsaw reaches <strong>53.93 Avg.</strong> on 7
+        video reasoning benchmarks. That is <strong>+1.47</strong> over the strongest puzzle baseline, VisualSphinx at
+        52.46, and it comes close to the video-supervised Video-R1 score of 55.11.
+      </p>
+
+      <div class="table-card">
+        <div class="table-title">Table 3. Qwen2.5-VL-7B on 7 video reasoning benchmarks</div>
+        <div class="table-scroll">
+          <table class="paper-table results-table wide-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>CGBench</th>
+                <th>Video-MMMU</th>
+                <th>MVBench</th>
+                <th>TempCompass</th>
+                <th>Video-MME</th>
+                <th>Video-TT</th>
+                <th>QBench-Video</th>
+                <th>Avg.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Qwen2.5-VL-Instruct</td>
+                <td>26.71</td>
+                <td>33.83</td>
+                <td>55.80</td>
+                <td>55.00</td>
+                <td>65.40</td>
+                <td>34.40</td>
+                <td>58.50</td>
+                <td>47.09</td>
+              </tr>
+              <tr>
+                <td>Visual Jigsaw</td>
+                <td>31.56</td>
+                <td>32.33</td>
+                <td>55.60</td>
+                <td>66.26</td>
+                <td>66.20</td>
+                <td>37.40</td>
+                <td>57.48</td>
+                <td>49.54</td>
+              </tr>
+              <tr>
+                <td>VisualSphinx</td>
+                <td>31.17</td>
+                <td>43.16</td>
+                <td>57.40</td>
+                <td>70.00</td>
+                <td>72.00</td>
+                <td>36.40</td>
+                <td>57.14</td>
+                <td>52.46</td>
+              </tr>
+              <tr>
+                <td>Video-R1</td>
+                <td>37.00</td>
+                <td>40.16</td>
+                <td>63.40</td>
+                <td>78.20</td>
+                <td>72.20</td>
+                <td>39.40</td>
+                <td>55.44</td>
+                <td>55.11</td>
+              </tr>
+              <tr>
+                <td>ViCrit</td>
+                <td>35.85</td>
+                <td>34.00</td>
+                <td>58.40</td>
+                <td>54.40</td>
+                <td>72.20</td>
+                <td>36.60</td>
+                <td>56.80</td>
+                <td>49.75</td>
+              </tr>
+              <tr>
+                <td>GRPO-CARE</td>
+                <td>33.94</td>
+                <td>34.50</td>
+                <td>62.00</td>
+                <td>67.60</td>
+                <td>62.80</td>
+                <td>38.80</td>
+                <td>54.76</td>
+                <td>50.62</td>
+              </tr>
+              <tr>
+                <td>Vision-Zero</td>
+                <td>27.48</td>
+                <td>37.50</td>
+                <td>60.00</td>
+                <td>51.20</td>
+                <td>67.80</td>
+                <td>34.40</td>
+                <td>58.16</td>
+                <td>48.07</td>
+              </tr>
+              <tr class="row-ours">
+                <td>Jigsaw</td>
+                <td>36.33</td>
+                <td>38.00</td>
+                <td>59.00</td>
+                <td>75.40</td>
+                <td>71.40</td>
+                <td>38.60</td>
+                <td>58.84</td>
+                <td>53.93</td>
+              </tr>
+              <tr class="row-ours">
+                <td>Mix</td>
+                <td>34.86</td>
+                <td>42.66</td>
+                <td>61.00</td>
+                <td>71.80</td>
+                <td>71.00</td>
+                <td>34.59</td>
+                <td>56.12</td>
+                <td>53.14</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="section">
-    <div class="container is-max-desktop">
+    <div class="container is-max-widescreen">
+      <div class="section-heading compact">
+        <span class="section-tag">Additional analyses</span>
+        <h2 class="title is-3 section-title">Direct mode and puzzle transfer</h2>
+      </div>
 
-      <div class="is-centered has-text-centered">
-        <div class="column">
-          <div class="content has-text-justified">
-            <p>
-              The results for the 7B baselines and our PuzzleCraft variants:
-            </p>
-
-            <div class="has-text-centered">
-
-              <figure class="image body-image">
-                <img src="./static/images/7b.png" alt="Table for the 7B baselines">
-              </figure>
-
+      <div class="columns is-variable is-5">
+        <div class="column is-7">
+          <div class="table-card full-height">
+            <div class="table-title">Table 4. Direct inference mode (no explicit CoT), Qwen2.5-VL-7B</div>
+            <div class="table-scroll">
+              <table class="paper-table compact-table results-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>MME</th>
+                    <th>MMStar</th>
+                    <th>POPE</th>
+                    <th>MMT</th>
+                    <th>CV-Bench</th>
+                    <th>MMVP</th>
+                    <th>Avg.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Qwen2.5-VL-Instruct</td>
+                    <td>2308</td>
+                    <td>63.27</td>
+                    <td>86.37</td>
+                    <td>62.74</td>
+                    <td>76.29</td>
+                    <td>78.33</td>
+                    <td>74.90</td>
+                  </tr>
+                  <tr>
+                    <td>ViCrit</td>
+                    <td>2178</td>
+                    <td>64.13</td>
+                    <td>85.96</td>
+                    <td>62.58</td>
+                    <td>76.59</td>
+                    <td>76.33</td>
+                    <td>73.90</td>
+                  </tr>
+                  <tr>
+                    <td>Vision-Zero</td>
+                    <td>2306</td>
+                    <td>63.53</td>
+                    <td>85.92</td>
+                    <td>63.06</td>
+                    <td>76.00</td>
+                    <td>77.67</td>
+                    <td>74.76</td>
+                  </tr>
+                  <tr>
+                    <td>Visual Jigsaw</td>
+                    <td>2313</td>
+                    <td>64.13</td>
+                    <td>86.37</td>
+                    <td>62.20</td>
+                    <td>76.47</td>
+                    <td>79.00</td>
+                    <td>75.13</td>
+                  </tr>
+                  <tr>
+                    <td>VisualSphinx</td>
+                    <td>2341</td>
+                    <td>63.73</td>
+                    <td>86.34</td>
+                    <td>62.65</td>
+                    <td>76.76</td>
+                    <td>77.33</td>
+                    <td>75.07</td>
+                  </tr>
+                  <tr>
+                    <td>GRPO-CARE</td>
+                    <td>2355</td>
+                    <td>63.93</td>
+                    <td>86.85</td>
+                    <td>63.58</td>
+                    <td>75.81</td>
+                    <td>78.00</td>
+                    <td>75.38</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Jigsaw</td>
+                    <td>2348</td>
+                    <td>64.33</td>
+                    <td>86.05</td>
+                    <td>63.70</td>
+                    <td>76.12</td>
+                    <td>77.33</td>
+                    <td>75.23</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Mix</td>
+                    <td>2371</td>
+                    <td>64.73</td>
+                    <td>86.65</td>
+                    <td>64.09</td>
+                    <td>77.36</td>
+                    <td>78.67</td>
+                    <td>76.03</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+          </div>
+        </div>
 
-            <p>
-              The results for the 3B baselines and our PuzzleCraft variants:
-            </p>
-
-            <div class="has-text-centered">
-
-              <figure class="image body-image">
-                <img src="./static/images/3b.png" alt="Table for the 3B baselines">
-              </figure>
-
+        <div class="column is-5">
+          <div class="table-card full-height">
+            <div class="table-title">Table 5. Inter-puzzle transfer</div>
+            <div class="table-scroll">
+              <table class="paper-table compact-table transfer-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Jigsaw</th>
+                    <th>PatchFit</th>
+                    <th>Rotation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Qwen2.5-VL-Instruct</td>
+                    <td>25.59</td>
+                    <td>21.2</td>
+                    <td>53.3</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Jigsaw</td>
+                    <td>36.65</td>
+                    <td>21.7</td>
+                    <td>33.9</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>PatchFit</td>
+                    <td>17.88</td>
+                    <td>62.6</td>
+                    <td>51.8</td>
+                  </tr>
+                  <tr class="row-ours">
+                    <td>Rotation</td>
+                    <td>25.55</td>
+                    <td>20.9</td>
+                    <td>70.8</td>
+                  </tr>
+                  <tr class="row-ours best-row">
+                    <td>Mix</td>
+                    <td>36.83</td>
+                    <td>48.6</td>
+                    <td>83.2</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-
-
+            <div class="content small-note">
+              <p>
+                Mixed-puzzle training gives the strongest overall transfer, lifting Jigsaw by <strong>+11.24</strong>,
+                PatchFit by <strong>+27.4</strong>, and Rotation by <strong>+29.9</strong> over the Qwen2.5-VL-Instruct
+                baseline.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-
-  </section>
-
-
-
-
-  <section class="section" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <h2 class="title">BibTeX</h2>
-      <pre><code>@misc{jeddi2025puzzlecurriculumgrpovisioncentric,
-    title         = {Puzzle Curriculum GRPO for Vision-Centric Reasoning},
-    author        = {Ahmadreza Jeddi and
-                     Hakki Can Karaimer and
-                     Hue Nguyen and
-                     Zhongling Wang and
-                     Ke Zhao and
-                     Javad Rajabi and
-                     Ran Zhang and
-                     Raghav Goyal and
-                     Babak Taati and
-                     Radek Grzeszczuk},
-    year          = {2025},
-    eprint        = {2512.14944},
-    archivePrefix = {arXiv},
-    primaryClass  = {cs.CV},
-    url           = {https://arxiv.org/abs/2512.14944},
-  }</code></pre>
     </div>
   </section>
 
+  <section class="section section-soft">
+    <div class="container is-max-desktop">
+      <div class="section-heading compact">
+        <span class="section-tag">Takeaway</span>
+        <h2 class="title is-3 section-title">Main message</h2>
+      </div>
+      <div class="content lead-copy centered-copy">
+        <p>
+          The paper's conclusion is simple: puzzle-based RLVR has real headroom, but progress depends less on merely
+          having puzzles and more on <strong>training dynamics</strong>. Flat weighting wastes compute, collapsed
+          rollouts weaken learning, and reward alone is not a reliable proxy for faithful reasoning. PuzzleCraft
+          improves this with exploration-aware weighting and explicit consistency analysis.
+        </p>
+      </div>
+    </div>
+  </section>
 
+  <section class="section" id="bibtex">
+    <div class="container is-max-desktop">
+      <div class="section-heading compact">
+        <span class="section-tag">Citation</span>
+        <h2 class="title is-3 section-title">BibTeX</h2>
+      </div>
+
+      <div class="bibtex-card">
+        <button class="copy-button" onclick="copyBibtex()">Copy</button>
+        <pre id="bibtex-block"><code>@misc{jeddi2026puzzlecraftexplorationawarecurriculumlearning,
+          title={PuzzleCraft: Exploration-Aware Curriculum Learning for Puzzle-Based RLVR in VLMs}, 
+          author={Ahmadreza Jeddi and Hakki Can Karaimer and Hue Nguyen and Zhongling Wang and Ke Zhao and Javad Rajabi and Ran Zhang and Raghav Goyal and Konstantinos G. Derpanis and Babak Taati and Radek Grzeszczuk},
+          year={2026},
+          eprint={2512.14944},
+          archivePrefix={arXiv},
+          primaryClass={cs.CV},
+          url={https://arxiv.org/abs/2512.14944}, 
+    }</code></pre>
+      </div>
+    </div>
+  </section>
 
   <footer class="footer">
     <div class="container">
-
-      <div class="columns is-centered">
-        <div class="column is-8">
-          <div class="content">
-            <p>
-              The website template is borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a>.
-            </p>
-          </div>
-        </div>
+      <div class="content has-text-centered footer-note">
+        Inspired by <a href="https://nerfies.github.io/" target="_blank" rel="noopener">Nerfies</a>.
       </div>
     </div>
   </footer>
 
+  <script>
+    function copyBibtex() {
+      const text = document.getElementById('bibtex-block').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-button');
+        const old = btn.innerText;
+        btn.innerText = 'Copied';
+        setTimeout(() => { btn.innerText = old; }, 1200);
+      });
+    }
+  </script>
 </body>
 
 </html>

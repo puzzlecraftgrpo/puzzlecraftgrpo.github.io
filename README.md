@@ -1,29 +1,26 @@
-# PCGRPO
+# PuzzleCraft project page
 
-This is the repository that contains source code for the [PuzzleCraft website](https://puzzlecraftgrpo.github.io).
+This repository contains the source for the PuzzleCraft project page.
 
-If you find PuzzleCraft useful for your work please cite:
-```
-@misc{jeddi2025puzzlecurriculumgrpovisioncentric,
-    title         = {Puzzle Curriculum GRPO for Vision-Centric Reasoning},
-    author        = {Ahmadreza Jeddi and
-                     Hakki Can Karaimer and
-                     Hue Nguyen and
-                     Zhongling Wang and
-                     Ke Zhao and
-                     Javad Rajabi and
-                     Ran Zhang and
-                     Raghav Goyal and
-                     Konstantinos G. Derpanis and
-                     Babak Taati and
-                     Radek Grzeszczuk},
-    year          = {2025},
-    eprint        = {2512.14944},
-    archivePrefix = {arXiv},
-    primaryClass  = {cs.CV},
-    url           = {https://arxiv.org/abs/2512.14944},
+## Paper
+**PuzzleCraft: Exploration-Aware Curriculum Learning for Puzzle-Based RLVR in VLMs**
+
+## Notes
+- The page content was refreshed to match the current PDF.
+- The local paper copy is in `static/pdfs/PuzzleCraft_arXiv_v2.pdf`.
+- Author links are included when a clear homepage was available.
+
+## Citation
+```bibtex
+@misc{jeddi2026puzzlecraftexplorationawarecurriculumlearning,
+      title={PuzzleCraft: Exploration-Aware Curriculum Learning for Puzzle-Based RLVR in VLMs}, 
+      author={Ahmadreza Jeddi and Hakki Can Karaimer and Hue Nguyen and Zhongling Wang and Ke Zhao and Javad Rajabi and Ran Zhang and Raghav Goyal and Konstantinos G. Derpanis and Babak Taati and Radek Grzeszczuk},
+      year={2026},
+      eprint={2512.14944},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2512.14944}, 
 }
 ```
 
-# Acknowlegments
-The website template is borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a>. For License info, please refer to their repo.
+Inspired by [Nerfies](https://nerfies.github.io/).
